@@ -1,0 +1,14 @@
+version: '3'
+tasks:
+  dev:
+    - air
+  build:
+    cmds:
+      - go build
+  test:
+    cmds:
+      - go test ./...
+  lint:
+    cmds:
+      - golangci-lint run ./...
+      - staticcheck ./...
