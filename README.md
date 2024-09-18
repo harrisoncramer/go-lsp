@@ -24,13 +24,11 @@ git clone git@github.com:harrisoncramer/go-lsp.git ~/.path-to-your-config/lua
 
 2. Add a command to reload the server to your Neovim configuration. Provide it your LSP attach function as a callback:
 
-```bash
-cat << EOF > ~/.path-to-your-config/lua/init.lua
+```lua
 vim.api.nvim_create_user_command("<leader>R", function()
-  local on_attach = require("lsp.init").on_attach # Your LSP handler w/ keybindings, etc
+  local on_attach = require("lsp.init").on_attach # Your LSP handler w/ keybindings, etc.
   require("go-lsp").restart(on_attach)
 end, { nargs = 0 })
-EOF
 ```
 
 3. Start the Air binary:
