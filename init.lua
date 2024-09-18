@@ -3,7 +3,10 @@ local M = {
   cmd_id = 0
 }
 
-M.restart = function(on_attach)
+---Reattaches to the new Language Server
+---@param on_attach function
+---@param project_path string
+M.restart = function(on_attach, project_path)
   -- If a previous autocmd exists, delete it
   if M.cmd_id ~= 0 then
     vim.api.nvim_del_autocmd(M.cmd_id)
@@ -15,12 +18,10 @@ M.restart = function(on_attach)
     vim.lsp.stop_client(M.existing_client)
   end
 
-  local bin_path = "/Users/harrisoncramer/.config/nvim/lua/go-lsp/tmp/main"
-
   -- Start the new server
   vim.lsp.start_client({
     name = "go-lsp",
-    cmd = { bin_path },
+    cmd = { project_path .. "/tmp/bin" },
     on_attach = on_attach,
     on_init = function(client)
       vim.notify("Client ready...")
