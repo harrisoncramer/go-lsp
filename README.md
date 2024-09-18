@@ -22,12 +22,17 @@ The basic functionality is taken from TJ's [awesome Youtube video](https://www.y
 git clone git@github.com:harrisoncramer/go-lsp.git ~/.path-to-your-config/lua
 ```
 
-2. Add a command to reload the server to your Neovim configuration. Provide it your LSP attach function as a callback:
+2. Add a command to reload the server to your Neovim configuration. 
+
+Provide it your LSP attach function as a callback, and the path that you have cloned this repository.
 
 ```lua
 vim.api.nvim_create_user_command("<leader>R", function()
-  local on_attach = require("lsp.init").on_attach # Your LSP handler w/ keybindings, etc.
-  require("go-lsp").restart(on_attach)
+  local on_attach = require("lsp.init").on_attach
+  require("go-lsp").restart(
+      on_attach,
+      "/Users/harrisoncramer/.config/nvim/lua/go-lsp"
+  )
 end, { nargs = 0 })
 ```
 
