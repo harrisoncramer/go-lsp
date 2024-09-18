@@ -21,7 +21,7 @@ M.restart = function(on_attach, project_path)
   -- Start the new server
   vim.lsp.start_client({
     name = "go-lsp",
-    cmd = { project_path .. "/tmp/bin" },
+    cmd = { project_path .. "/tmp/main" },
     on_attach = on_attach,
     on_init = function(client)
       vim.notify("Client ready...")
