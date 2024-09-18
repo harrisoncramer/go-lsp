@@ -27,7 +27,7 @@ git clone git@github.com:harrisoncramer/go-lsp.git ~/.path-to-your-config/lua
 Provide it your LSP attach function as a callback, and the path that you have cloned this repository.
 
 ```lua
-vim.api.nvim_create_user_command("<leader>R", function()
+vim.api.nvim_create_user_command("n", "<leader>R", function()
   local on_attach = require("lsp.init").on_attach
   require("go-lsp").restart(
       on_attach,
