@@ -6,9 +6,7 @@ This repository contains a basic implementation of that server protocol, written
 
 [![Demo](https://hjc-public.s3.amazonaws.com/lsp-preview.png)](https://hjc-public.s3.amazonaws.com/lsp-demo.mp4)
 
-It's meant to server as a jumping off point for quickly developing real LSP functionality.
-
-The basic code structure is cribbed from TJ's [awesome Youtube video](https://www.youtube.com/watch?v=YsdlcQoHqPY&ab_channel=TJDeVries) on working with LSPs.
+It's meant to server as a jumping off point for quickly developing real LSP functionality. The basic code structure is cribbed from TJ's [awesome Youtube video](https://www.youtube.com/watch?v=YsdlcQoHqPY&ab_channel=TJDeVries) on working with LSPs.
 
 ## Dependencies
 
