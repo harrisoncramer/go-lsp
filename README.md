@@ -2,7 +2,7 @@
 
 The LSP protocol defines how a server and client must exchange information when providing language features like auto-completion, go-to-definition, or diagnostics. This repository aims to simplify the process of creating an LSP server in Go, tailored specifically for integration with Neovim.
 
-This repository contains a basic implementation of that server protocol, written in Go. It also provides a Lua script and tooling for hot-reloading the server in Neovim.
+It contains a basic implementation of the LSP protocol, written in Go. It also provides a Lua script and tooling for hot-reloading the server in Neovim.
 
 [![Demo](https://hjc-public.s3.amazonaws.com/lsp-preview.png)](https://hjc-public.s3.amazonaws.com/lsp-demo.mp4)
 
