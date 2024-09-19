@@ -5,8 +5,7 @@ local M = {
 
 ---Reattaches to the new Language Server
 ---@param on_attach function
----@param project_path string
-M.restart = function(on_attach, project_path)
+M.restart = function(on_attach)
   -- If a previous autocmd exists, delete it
   if M.cmd_id ~= 0 then
     vim.api.nvim_del_autocmd(M.cmd_id)
@@ -18,10 +17,14 @@ M.restart = function(on_attach, project_path)
     vim.lsp.stop_client(M.existing_client)
   end
 
+  -- Get this directory...
+  local current_file = debug.getinfo(1, "S").source:sub(2)
+  local current_dir = current_file:match("(.*/)")
+
   -- Start the new server
   vim.lsp.start_client({
     name = "go-lsp",
-    cmd = { project_path .. "/tmp/main" },
+    cmd = { current_dir .. "/tmp/main" },
     on_attach = on_attach,
     on_init = function(client)
       vim.notify("Client ready...")

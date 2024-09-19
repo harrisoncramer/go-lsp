@@ -20,20 +20,19 @@ It's meant to server as a jumping off point for quickly developing real LSP func
 1. Clone this repository to Neovim's `lua` configuration folder:
 
 ```bash
-git clone git@github.com:harrisoncramer/go-lsp.git ~/.path-to-your-config/lua
+git clone git@github.com:harrisoncramer/go-lsp.git ~/.path-to-your-config/lua/
 ```
 
-2. Add a command to reload the server to your Neovim configuration. 
-
-Provide it your LSP attach function as a callback, and the path that you have cloned this repository.
+2. Add a command to reload the server to your Neovim configuration. Provide it your LSP attach function as a callback, so you can set up keybindings and so forth:
 
 ```lua
+# Or whatever your "on_attach" function looks like...
+local on_attach = function(client, bufnr)
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, { noremap = true, silent = true })
+end
+
 vim.keymap.set("n", "<leader>R", function()
-  local on_attach = require("lsp.init").on_attach
-  require("go-lsp").restart(
-    on_attach,
-    "/Users/harrisoncramer/.config/nvim/lua/go-lsp"
-  )
+  require("go-lsp").restart(on_attach)
 end)
 ```
 
