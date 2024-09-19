@@ -26,7 +26,7 @@ git clone git@github.com:harrisoncramer/go-lsp.git ~/.path-to-your-config/lua/
 2. Add a command to reload the server to your Neovim configuration. Provide it your LSP attach function as a callback, so you can set up keybindings and so forth:
 
 ```lua
-# Or whatever your "on_attach" function looks like...
+-- Or whatever your "on_attach" function looks like...
 local on_attach = function(client, bufnr)
   vim.keymap.set("n", "K", vim.lsp.buf.hover, { noremap = true, silent = true })
 end
