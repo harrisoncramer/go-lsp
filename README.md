@@ -32,7 +32,11 @@ local on_attach = function(client, bufnr)
 end
 
 vim.keymap.set("n", "<leader>R", function()
-  require("go-lsp").restart(on_attach)
+  local ok, go_lsp = pcall(require, "go-lsp")
+  if not ok then
+    error("Could not load Go LSP!")
+  end
+  go_lsp.restart(on_attach)
 end)
 ```
 

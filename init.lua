@@ -20,11 +20,16 @@ M.restart = function(on_attach)
   -- Get this directory...
   local current_file = debug.getinfo(1, "S").source:sub(2)
   local current_dir = current_file:match("(.*/)")
+  local bin_path = current_dir .. "/tmp/main"
+
+  if not vim.loop.fs_stat(bin_path) then
+    error("Must build the binary first!")
+  end
 
   -- Start the new server
   vim.lsp.start_client({
     name = "go-lsp",
-    cmd = { current_dir .. "/tmp/main" },
+    cmd = { bin_path },
     on_attach = on_attach,
     on_init = function(client)
       vim.notify("Client ready...")
