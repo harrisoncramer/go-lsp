@@ -47,4 +47,4 @@ cd ~/.path-to-your-config/lua/go-lsp
 task dev
 ```
 
-4. Open up a markdown file and press `<leader>R` to start the development server. When you make changes to the LSP source code, the `air` binary will rebuild the LSP automatically. Run `<leader>R` to reattach to the rebuilt LSP server.
+4. Open up a Go file and press `<leader>R` to start the development server. When you make changes to the LSP source code, the `air` binary will rebuild the LSP automatically. Run `<leader>R` to reattach to the rebuilt LSP server.
