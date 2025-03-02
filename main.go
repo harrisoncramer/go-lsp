@@ -28,11 +28,14 @@ func main() {
 				os.Exit(0)
 			}
 
-			logger, err := logger.NewLogger(ctx, logPath)
+			logger, err := logger.NewLogger(ctx, logger.NewLoggerParams{
+				LogPath: "/tmp/go-lsp.log",
+				Level:   logger.DebugLevel,
+			})
 			if err != nil {
 				log.Fatalf("failed to initialize logger: %v", err)
 			}
-			logger.Println("starting server")
+			logger.Debug("starting server")
 			s := server.NewServer(ctx, logger)
 			s.Start()
 		},

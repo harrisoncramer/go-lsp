@@ -29,7 +29,7 @@ func NewServer(ctx context.Context, logger *logger.Logger) Server {
 
 // Starts the server and splits the RPC stream, processing each message in turn
 func (s Server) Start() {
-	s.logger.Println("server started")
+	s.logger.Debug("server started")
 
 	writer := os.Stdout
 	state := analysis.NewState()
@@ -40,7 +40,7 @@ func (s Server) Start() {
 		msg := parser.Bytes()
 		method, contents, err := s.parser.DecodeMessage(msg)
 		if err != nil {
-			s.logger.Printf("failed to decode msg: %s", err)
+			s.logger.Info("failed to decode msg: %s", err)
 			continue
 		}
 
@@ -61,43 +61,54 @@ const (
 
 // Handles each message type by decoding the request and responding or updating internal state
 func (s Server) handleMessage(writer io.Writer, method string, contents []byte, state analysis.State) {
-	s.logger.Printf("msg: %s", method)
+	s.logger.Debug("msg: %s", method)
+	var err error
 	switch method {
 	case didChangeMsg:
-		if request, err := decodeMsg[lsp.DidChangeTextDocumentNotification](contents); err == nil {
+		var request *lsp.DidChangeTextDocumentNotification
+		if request, err = decodeMsg[lsp.DidChangeTextDocumentNotification](contents); err == nil {
 			for _, change := range request.Params.ContentChanges {
 				state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
 			}
 		}
 	case didOpenMsg:
-		if request, err := decodeMsg[lsp.DidOpenTextDocumentNotification](contents); err == nil {
+		var request *lsp.DidOpenTextDocumentNotification
+		if request, err = decodeMsg[lsp.DidOpenTextDocumentNotification](contents); err == nil {
 			state.OpenDocument(
 				request.Params.TextDocumentItem.URI,
 				request.Params.TextDocumentItem.Text,
 			)
 		}
 	case saveMsg:
-		if request, err := decodeMsg[lsp.DidSaveTextDocumentNotification](contents); err == nil {
+		var request *lsp.DidSaveTextDocumentNotification
+		if request, err = decodeMsg[lsp.DidSaveTextDocumentNotification](contents); err == nil {
 			state.Save(request.Params.TextDocument.URI)
 		}
 	case hoverMsg:
-		if request, err := decodeMsg[lsp.HoverRequest](contents); err == nil {
+		var request *lsp.HoverRequest
+		if request, err = decodeMsg[lsp.HoverRequest](contents); err == nil {
 			msg := state.Hover(request.ID, request.Params.TextDocumentPositionParams)
 			sendResponse(s.parser, msg, writer, s.logger)
 		}
 	case definitionMsg:
-		if request, err := decodeMsg[lsp.DefinitionRequest](contents); err == nil {
+		var request *lsp.DefinitionRequest
+		if request, err = decodeMsg[lsp.DefinitionRequest](contents); err == nil {
 			msg := state.Definition(request.ID, request.Params.TextDocument.URI, request.Params.Position)
 			sendResponse(s.parser, msg, writer, s.logger)
 		}
 	case initializeMsg:
-		if request, err := decodeMsg[lsp.InitializeRequest](contents); err == nil {
+		var request *lsp.InitializeRequest
+		if request, err = decodeMsg[lsp.InitializeRequest](contents); err == nil {
 			msg := lsp.NewInitializeResponse(request.ID)
 			sendResponse(s.parser, msg, writer, s.logger)
-			s.logger.Println("server initialized")
+			s.logger.Debug("server initialized")
 		}
 	case initializedMsg:
-		s.logger.Println("server initialized")
+		s.logger.Debug("server initialized")
+	}
+
+	if err != nil {
+		s.logger.Debug("error handling message for method %s: %v", method, err)
 	}
 }
 
@@ -119,6 +130,6 @@ func sendResponse[T lsp.LSPResponse](parser rpc.Rpc, msg T, writer io.Writer, lo
 	}
 	_, err := writer.Write([]byte(response))
 	if err != nil {
-		logger.Printf("failed to send message to client: %v", err)
+		logger.Info("failed to send message to client: %v", err)
 	}
 }

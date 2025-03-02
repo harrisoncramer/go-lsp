@@ -40,7 +40,6 @@ type BaseMessage struct {
 
 // Decodes a byte slice and extracts the method and message content
 func (r Rpc) DecodeMessage(msg []byte) (string, []byte, error) {
-	r.logger.Print(string(msg))
 	header, content, found := bytes.Cut(msg, headerSep)
 	if !found {
 		return "", nil, ErrHeaderNotFound
@@ -61,6 +60,8 @@ func (r Rpc) DecodeMessage(msg []byte) (string, []byte, error) {
 	if err := json.Unmarshal(content[:contentLength], &baseMessage); err != nil {
 		return "", nil, err
 	}
+
+	// r.logger.Debug(string(content[:contentLength]))
 
 	return baseMessage.Method, content[:contentLength], nil
 }

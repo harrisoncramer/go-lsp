@@ -2,39 +2,59 @@ package logger
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"os"
 )
 
-type LoggerOptions interface {
-	Path() string
-}
+type LogLevel int
+
+const (
+	InfoLevel LogLevel = iota
+	DebugLevel
+	ErrorLevel
+)
 
 type Logger struct {
 	*log.Logger
+	level LogLevel
 }
 
-// Generates a new logger that writes to the given filename
-func NewLogger(ctx context.Context, logPath string) (*Logger, error) {
-	f, err := os.OpenFile(logPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+type NewLoggerParams struct {
+	LogPath string
+	Level   LogLevel
+}
+
+// NewLogger creates a new logger with a specified log level
+func NewLogger(ctx context.Context, params NewLoggerParams) (*Logger, error) {
+	f, err := os.OpenFile(params.LogPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: Add more context to logs
-
 	return &Logger{
-		log.New(f, "[go-lsp]: ", log.Ldate|log.Ltime|log.Lshortfile),
+		Logger: log.New(f, "[go-lsp]: ", log.Ldate|log.Ltime|log.Lshortfile),
+		level:  params.Level,
 	}, nil
 }
 
-func (l *Logger) PrintJSON(v any) {
-	prettyJSON, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		l.Printf("could not pretty-print: %#v", v)
-		return
+// logf logs a formatted message at a specific log level
+func (l *Logger) logf(level LogLevel, prefix string, format string, v ...interface{}) {
+	if l.level >= level {
+		l.Printf(prefix+" "+format, v...)
 	}
+}
 
-	l.Println(string(prettyJSON))
+// Info logs a formatted info level message
+func (l *Logger) Info(format string, v ...interface{}) {
+	l.logf(InfoLevel, "INFO:", format, v...)
+}
+
+// Debug logs a formatted debug level message
+func (l *Logger) Debug(format string, v ...interface{}) {
+	l.logf(DebugLevel, "DEBUG:", format, v...)
+}
+
+// Error logs a formatted error level message
+func (l *Logger) Error(format string, v ...interface{}) {
+	l.logf(ErrorLevel, "ERROR:", format, v...)
 }
