@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"os"
@@ -15,11 +16,13 @@ type Logger struct {
 }
 
 // Generates a new logger that writes to the given filename
-func NewLogger(logPath string) (*Logger, error) {
+func NewLogger(ctx context.Context, logPath string) (*Logger, error) {
 	f, err := os.OpenFile(logPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO: Add more context to logs
 
 	return &Logger{
 		log.New(f, "[go-lsp]: ", log.Ldate|log.Ltime|log.Lshortfile),

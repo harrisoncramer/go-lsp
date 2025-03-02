@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/harrisoncramer/go-lsp/logger"
@@ -15,6 +17,8 @@ func main() {
 	var logPath string
 	var rootDir string
 
+	ctx := context.Background()
+
 	var rootCmd = &cobra.Command{
 		Use:   "go-lsp",
 		Short: "go-lsp is a Language Server Protocol implementation",
@@ -24,13 +28,12 @@ func main() {
 				os.Exit(0)
 			}
 
-			logger, err := logger.NewLogger(logPath)
+			logger, err := logger.NewLogger(ctx, logPath)
 			if err != nil {
-				fmt.Printf("Failed to initialize logger: %v\n", err)
-				os.Exit(1)
+				log.Fatalf("failed to initialize logger: %v", err)
 			}
 			logger.Println("starting server")
-			s := server.NewServer(logger)
+			s := server.NewServer(ctx, logger)
 			s.Start()
 		},
 	}

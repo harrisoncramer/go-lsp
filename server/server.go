@@ -2,6 +2,7 @@ package server
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,7 +19,7 @@ type Server struct {
 	parser rpc.Rpc
 }
 
-func NewServer(logger *logger.Logger) Server {
+func NewServer(ctx context.Context, logger *logger.Logger) Server {
 	parser := rpc.NewParser(logger)
 	return Server{
 		logger: logger,
