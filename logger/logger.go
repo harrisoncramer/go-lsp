@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"path"
 )
 
 type LoggerOptions interface {
@@ -16,12 +15,8 @@ type Logger struct {
 }
 
 // Generates a new logger that writes to the given filename
-func NewLogger() (*Logger, error) {
-	fileName, err := makeLogPath()
-	if err != nil {
-		return nil, err
-	}
-	f, err := os.OpenFile(fileName, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+func NewLogger(logPath string) (*Logger, error) {
+	f, err := os.OpenFile(logPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +34,4 @@ func (l *Logger) PrintJSON(v any) {
 	}
 
 	l.Println(string(prettyJSON))
-}
-
-func makeLogPath() (string, error) {
-	return path.Join("/tmp", "go-lsp.log"), nil
 }

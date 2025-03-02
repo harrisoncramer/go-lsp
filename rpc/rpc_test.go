@@ -14,8 +14,9 @@ type EncodingExample struct {
 var goodMsg = "Content-Length: 54\r\n\r\n{\"jsonrpc\":\"2.0\",\"result\":{\"contents\":\"Hello World!\"}}"
 
 func TestEncodeMessage(t *testing.T) {
+	parser := rpc.NewParser(nil)
 	t.Run("Should encode a simple hover message", func(t *testing.T) {
-		got := rpc.EncodeMessage(
+		got := parser.EncodeMessage(
 			lsp.HoverResponse{
 				Response: lsp.Response{
 					RPC: "2.0",
@@ -34,8 +35,9 @@ func TestEncodeMessage(t *testing.T) {
 }
 
 func TestDecodeMessage(t *testing.T) {
+	parser := rpc.NewParser(nil)
 	t.Run("Should get the length of a message", func(t *testing.T) {
-		_, content, err := rpc.DecodeMessage([]byte(goodMsg))
+		_, content, err := parser.DecodeMessage([]byte(goodMsg))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -46,8 +48,9 @@ func TestDecodeMessage(t *testing.T) {
 	})
 
 	t.Run("Should error for missing content length", func(t *testing.T) {
+		parser := rpc.NewParser(nil)
 		missingContentLengthMsg := "Content-Length: \r\n\r\n{\"jsonrpc\":\"2.0\",\"result\":{\"contents\":\"Hello World!\"}}"
-		_, _, err := rpc.DecodeMessage([]byte(missingContentLengthMsg))
+		_, _, err := parser.DecodeMessage([]byte(missingContentLengthMsg))
 		if err != rpc.ErrHeaderNotFound {
 			t.Fatalf("Got %v but wanted %v", err, rpc.ErrHeaderNotFound)
 		}

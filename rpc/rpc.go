@@ -7,15 +7,25 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/harrisoncramer/go-lsp/lsp"
+	"github.com/harrisoncramer/go-lsp/logger"
 )
+
+type Rpc struct {
+	logger *logger.Logger
+}
+
+func NewParser(logger *logger.Logger) Rpc {
+	return Rpc{
+		logger: logger,
+	}
+}
 
 var ErrHeaderNotFound = errors.New("message missing header")
 var headerText = "Content-Length: "
 var headerSep = []byte{'\r', '\n', '\r', '\n'}
 
 // Encodes a message struct into a string that adheres to the protocol
-func EncodeMessage[T lsp.LSPResponse](msg T) string {
+func (r Rpc) EncodeMessage(msg any) string {
 	content, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -29,7 +39,8 @@ type BaseMessage struct {
 }
 
 // Decodes a byte slice and extracts the method and message content
-func DecodeMessage(msg []byte) (string, []byte, error) {
+func (r Rpc) DecodeMessage(msg []byte) (string, []byte, error) {
+	fmt.Println(string(msg))
 	header, content, found := bytes.Cut(msg, headerSep)
 	if !found {
 		return "", nil, ErrHeaderNotFound
@@ -55,7 +66,7 @@ func DecodeMessage(msg []byte) (string, []byte, error) {
 }
 
 // Splits a byte slice, used to satisfy a scanner parsing the stdin data
-func Split(data []byte, _ bool) (advance int, token []byte, err error) {
+func (r Rpc) Split(data []byte, _ bool) (advance int, token []byte, err error) {
 
 	header, _, contentLength, err := ParseHeader(data)
 	if err != nil {

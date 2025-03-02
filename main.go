@@ -1,16 +1,46 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/harrisoncramer/go-lsp/logger"
-	"github.com/harrisoncramer/go-lsp/run"
+	"github.com/harrisoncramer/go-lsp/server"
+	"github.com/spf13/cobra"
 )
 
-func main() {
+var version = "1.0.0"
 
-	logger, err := logger.NewLogger()
-	if err != nil {
-		panic(err)
+func main() {
+	var logPath string
+	var rootDir string
+
+	var rootCmd = &cobra.Command{
+		Use:   "go-lsp",
+		Short: "go-lsp is a Language Server Protocol implementation",
+		Run: func(cmd *cobra.Command, args []string) {
+			if v, _ := cmd.Flags().GetBool("version"); v {
+				fmt.Printf("go-lsp version %s\n", version)
+				os.Exit(0)
+			}
+
+			logger, err := logger.NewLogger(logPath)
+			if err != nil {
+				fmt.Printf("Failed to initialize logger: %v\n", err)
+				os.Exit(1)
+			}
+			logger.Println("starting server")
+			s := server.NewServer(logger)
+			s.Start()
+		},
 	}
 
-	run.Start(logger)
+	rootCmd.PersistentFlags().StringVarP(&logPath, "logpath", "l", "/tmp/go-lsp.log", "Set log path")
+	rootCmd.PersistentFlags().StringVarP(&rootDir, "root", "r", "", "Set root directory (default: current directory)")
+	rootCmd.Flags().BoolP("version", "v", false, "Print the version number")
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
